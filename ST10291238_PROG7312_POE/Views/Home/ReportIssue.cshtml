@@ -1,0 +1,106 @@
+﻿@model ST10291238_PROG7312_POE.Models.Issue
+@using ST10291238_PROG7312_POE.Models
+
+@{
+    ViewData["Title"] = "Report an Issue";
+}
+
+<h2 class="mb-1">Report an Issue</h2>
+<p class="text-secondary mb-4">Please complete the form below. Fields marked * are required.</p>
+
+<form asp-action="ReportIssue" method="post" enctype="multipart/form-data" id="reportForm" novalidate>
+    @Html.AntiForgeryToken()
+
+    <div class="row g-4">
+        <div class="col-12 col-md-6">
+            <label for="Location" class="form-label">Location *</label>
+            <input asp-for="Location" class="form-control" id="Location" placeholder="e.g., 123 Main Rd, Midrand" />
+            <span asp-validation-for="Location" class="text-danger small"></span>
+        </div>
+
+        <div class="col-12 col-md-6">
+            <label for="Category" class="form-label">Category *</label>
+            <select asp-for="Category" class="form-select" id="Category" aria-describedby="categoryHelp">
+                @foreach (var cat in Enum.GetValues(typeof(IssueCategory)))
+                {
+                    <option value="@((int)cat)">@cat</option>
+                }
+            </select>
+            <div id="categoryHelp" class="form-text">Sanitation, Roads, Utilities, Parks, Safety, or Other.</div>
+        </div>
+
+        <div class="col-12">
+            <label for="Description" class="form-label">Description *</label>
+            <textarea asp-for="Description" class="form-control" id="Description" rows="6"
+                      placeholder="Describe the issue, landmarks nearby, and any safety concerns."></textarea>
+            <span asp-validation-for="Description" class="text-danger small"></span>
+        </div>
+
+        <div class="col-12">
+            <label class="form-label">Attach images/documents (PNG, JPG, GIF, PDF, DOCX)</label>
+            <input type="file" name="files" id="files" multiple class="form-control" aria-describedby="fileHelp" />
+            <div id="fileHelp" class="form-text">
+                You can attach multiple files. Avoid including personal information in images.
+            </div>
+        </div>
+
+        <div class="col-12">
+            <label class="form-label">Engagement</label>
+            <div class="d-flex align-items-center gap-3">
+                <progress id="progress" value="0" max="100" class="flex-grow-1" aria-label="Form completion progress"></progress>
+                <span id="progressLabel" class="small text-secondary">Let's get started!</span>
+            </div>
+        </div>
+
+        <div class="col-12 d-flex gap-2 flex-wrap">
+            <button type="submit" class="btn btn-success">Submit</button>
+            <a asp-action="Index" class="btn btn-outline-secondary">Back to Main Menu</a>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        (function () {
+            const fields = ["Location", "Category", "Description", "files"];
+            const form = document.getElementById("reportForm");
+            const progress = document.getElementById("progress");
+            const label = document.getElementById("progressLabel");
+
+            const messages = [
+                "Great start — keep going!",
+                "You're almost done!",
+                "Thanks for helping improve our city!",
+                "Every report makes a difference."
+            ];
+
+            function calc() {
+                let filled = 0;
+                if (document.getElementById("Location").value.trim().length > 0) filled++;
+                if (document.getElementById("Description").value.trim().length > 0) filled++;
+                if (document.getElementById("Category").value !== "") filled++;
+                if (document.getElementById("files").files.length > 0) filled++;
+
+                const pct = Math.round((filled / fields.length) * 100);
+                progress.value = pct;
+
+                if (pct === 0) label.textContent = "Let's get started!";
+                else if (pct < 50) label.textContent = messages[0];
+                else if (pct < 100) label.textContent = messages[1];
+                else label.textContent = messages[2];
+            }
+
+            fields.forEach(id => {
+                const el = document.getElementById(id);
+                el.addEventListener("input", calc);
+                el.addEventListener("change", calc);
+            });
+            calc();
+
+            form.addEventListener("submit", function () {
+                label.textContent = "Submitting…";
+            });
+        })();
+    </script>
+}

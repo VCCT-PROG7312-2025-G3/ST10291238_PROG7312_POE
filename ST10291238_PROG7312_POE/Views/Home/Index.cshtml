@@ -1,8 +1,44 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Municipal Services – Main Menu";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<h1 class="mb-2">Municipal Services</h1>
+<p class="text-secondary mb-4">Select a task to continue.</p>
+
+<div class="row g-3">
+    <div class="col-12 col-md-4">
+        <div class="p-4 border rounded-3 h-100">
+            <h5 class="mb-2">Report Issues</h5>
+            <p class="text-secondary small">Log sanitation, roads, utilities, parks, or safety issues.</p>
+            <form asp-controller="Home" asp-action="ReportIssue" method="get">
+                <button type="submit" class="btn btn-primary w-100">Open</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-4">
+        <div class="p-4 border rounded-3 h-100 opacity-75">
+            <h5 class="mb-2">Local Events & Announcements</h5>
+            <p class="text-secondary small">Community notices and upcoming events.</p>
+            <div class="d-flex align-items-center gap-2">
+                <button class="btn btn-secondary w-100" disabled>Coming Soon</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-4">
+        <div class="p-4 border rounded-3 h-100 opacity-75">
+            <h5 class="mb-2">Service Request Status</h5>
+            <p class="text-secondary small">Track progress of submitted requests.</p>
+            <div class="d-flex align-items-center gap-2">
+                <button class="btn btn-secondary w-100" disabled>Coming Soon</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<hr class="my-4" />
+
+<div class="small text-secondary">
+    Tip: Provide as much detail as possible when reporting to help teams respond effectively.
 </div>

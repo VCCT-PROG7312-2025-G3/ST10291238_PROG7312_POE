@@ -1,7 +1,10 @@
+using ST10291238_PROG7312_POE.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddSingleton<IssueStore>();
 
 var app = builder.Build();
 

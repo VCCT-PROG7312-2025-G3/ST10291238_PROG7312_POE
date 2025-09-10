@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+﻿@* <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -45,5 +45,71 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html> *@
+
+@{
+    var title = ViewData["Title"] as string ?? "Municipal Services";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@title</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/ST10291238_PROG7312_POE.styles.css" asp-append-version="true" />
+</head>
+<body class="gov-body">
+    <header class="gov-header">
+        <div class="container d-flex align-items-center justify-content-between py-3">
+            <div class="d-flex align-items-center gap-3">
+                <img src="~/images/Coat_of_arms_of_South_Africa_(heraldic).svg" alt="Municipal Emblem" class="gov-crest" />
+                <div>
+                    <div class="gov-site-id">City of Cape Town</div>
+                    <div class="gov-site-sub">Municipal Services Portal</div>
+                </div>
+            </div>
+            <div class="gov-flag"></div>
+        </div>
+        <nav class="gov-subbar">
+            <div class="container d-flex align-items-center gap-3 small">
+                <span class="text-white-50">You are using a secure government service</span>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container my-4">
+        <div class="gov-breadcrumb small" aria-label="breadcrumb">
+            <span>Home</span>
+            @if (!string.Equals(title, "Municipal Services – Main Menu", System.StringComparison.OrdinalIgnoreCase))
+            {
+                <span class="mx-2">/</span>
+            
+                <span>@title</span>
+            }
+        </div>
+
+        <div class="gov-card shadow-sm p-4 rounded-3">
+            @RenderBody()
+        </div>
+    </main>
+
+    <footer class="gov-footer">
+        <div class="container py-4 d-flex flex-wrap justify-content-between gap-3">
+            <div>
+                <div class="fw-semibold">City of Cape Town</div>
+                <div class="small text-white-50">© @DateTime.Now.Year. All rights reserved.</div>
+            </div>
+            <div class="small text-white-50">
+                POPIA compliance • Terms • Accessibility
+            </div>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    @RenderSection("Scripts", required: false)
 </body>
 </html>

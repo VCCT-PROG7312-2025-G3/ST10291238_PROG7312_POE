@@ -28,7 +28,7 @@ namespace ST10291238_PROG7312_POE.Controllers
         [HttpGet]
         public IActionResult ReportIssue()
         {
-            View(new Issue());
+            return View(new Issue());
         }
 
         [HttpPost]
@@ -75,7 +75,7 @@ namespace ST10291238_PROG7312_POE.Controllers
                 }
             }
 
-            model.AttachmentPath = joinedPaths;
+            model.AttachmentPaths = joinedPaths;
             _store.Add(model);
 
             return RedirectToAction(nameof(Success), new { id = model.Id });

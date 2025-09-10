@@ -11,7 +11,7 @@ namespace ST10291238_PROG7312_POE.Models
         public IssueCategory Category { get; set; }
         public string Description { get; set; }
 
-        public string AttachmentPath { get; set; }
+        public string AttachmentPaths { get; set; }
 
         public string Status { get; set; } = "Submitted";
     }

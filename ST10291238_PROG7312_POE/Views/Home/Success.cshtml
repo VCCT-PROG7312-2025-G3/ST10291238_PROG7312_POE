@@ -1,0 +1,51 @@
+﻿@model ST10291238_PROG7312_POE.Models.Issue
+@{
+    ViewData["Title"] = "Report Submitted";
+}
+
+<div class="d-flex align-items-center gap-3 mb-3">
+    <div class="badge rounded-pill px-3 py-2" style="background:var(--gov-green-50); color:var(--gov-green-700);">
+        Submitted
+    </div>
+    <h2 class="mb-0">Thank you!</h2>
+</div>
+
+<p class="text-secondary">Your report has been submitted successfully. Keep the reference below for follow-up.</p>
+
+<div class="row g-3">
+    <div class="col-12 col-md-6">
+        <div class="p-3 border rounded-3">
+            <dl class="row mb-0">
+                <dt class="col-4">Reference</dt>
+                <dd class="col-8">@Model.Id</dd>
+                <dt class="col-4">Submitted</dt>
+                <dd class="col-8">@Model.CreatedUtc.ToLocalTime()</dd>
+                <dt class="col-4">Location</dt>
+                <dd class="col-8">@Model.Location</dd>
+                <dt class="col-4">Category</dt>
+                <dd class="col-8">@Model.Category</dd>
+                <dt class="col-4">Status</dt>
+                <dd class="col-8">@Model.Status</dd>
+            </dl>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-6">
+        @if (!string.IsNullOrWhiteSpace(Model.AttachmentPaths))
+        {
+            <div class="p-3 border rounded-3 h-100">
+                <h5 class="mb-2">Attachments</h5>
+                <ul class="mb-0">
+                    @foreach (var path in Model.AttachmentPaths.Split(';', System.StringSplitOptions.RemoveEmptyEntries))
+                    {
+                        <li><a href="@path" target="_blank" rel="noopener">View file</a></li>
+                    }
+                </ul>
+            </div>
+        }
+    </div>
+</div>
+
+<div class="mt-4">
+    <a asp-action="Index" class="btn btn-primary">Back to Main Menu</a>
+</div>
