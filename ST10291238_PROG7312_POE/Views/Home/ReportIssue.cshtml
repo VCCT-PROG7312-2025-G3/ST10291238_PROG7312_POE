@@ -11,6 +11,8 @@
 <form asp-action="ReportIssue" method="post" enctype="multipart/form-data" id="reportForm" novalidate>
     @Html.AntiForgeryToken()
 
+    <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
     <div class="row g-4">
         <div class="col-12 col-md-6">
             <label for="Location" class="form-label">Location *</label>

@@ -34,6 +34,16 @@ namespace ST10291238_PROG7312_POE.Controllers
         [HttpPost]
         public IActionResult ReportIssue(Issue model, IFormFile[]? files)
         {
+            if (model.Id == Guid.Empty) model.Id = Guid.NewGuid();
+            if (model.CreatedUtc == default) model.CreatedUtc = DateTime.UtcNow;
+            if (string.IsNullOrWhiteSpace(model.Status)) model.Status = "Submitted";
+
+            ModelState.Remove(nameof(model.Id));
+            ModelState.Remove(nameof(model.CreatedUtc));
+            ModelState.Remove(nameof(model.Status));
+            ModelState.Remove(nameof(model.AttachmentPaths));
+
+
             if (string.IsNullOrWhiteSpace(model.Location))
             {
                 ModelState.AddModelError(nameof(model.Location), "Location is required.");
