@@ -11,8 +11,6 @@
 <form asp-action="ReportIssue" method="post" enctype="multipart/form-data" id="reportForm" novalidate>
     @Html.AntiForgeryToken()
 
-    <div asp-validation-summary="All" class="text-danger mb-3"></div>
-
     <div class="row g-4">
         <div class="col-12 col-md-6">
             <label for="Location" class="form-label">Location *</label>
@@ -47,7 +45,6 @@
         </div>
 
         <div class="col-12">
-            <label class="form-label">Engagement</label>
             <div class="d-flex align-items-center gap-3">
                 <progress id="progress" value="0" max="100" class="flex-grow-1" aria-label="Form completion progress"></progress>
                 <span id="progressLabel" class="small text-secondary">Let's get started!</span>
