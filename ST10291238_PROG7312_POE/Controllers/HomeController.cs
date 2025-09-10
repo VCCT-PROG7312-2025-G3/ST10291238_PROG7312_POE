@@ -51,6 +51,44 @@ namespace ST10291238_PROG7312_POE.Controllers
 
             string safeId = model.Id.ToString("N");
             string uploadRoot = Path.Combine(_env.WebRootPath ?? "wwwroot", "uploads", safeId);
+            Directory.CreateDirectory(uploadRoot);
+
+            string joinedPaths = "";
+            if (files != null && files.Length > 0)
+            {
+                foreach (var file in files)
+                {
+                    if (file == null || file.Length == 0)
+                        continue;
+
+                    var allowed = new[] { ".jpg", ".jpeg", ".png", ".gif", ".pdf", ".docx" };
+                    var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
+                    if (!allowed.Contains(ext))
+                        continue;
+
+                    using var stream = System.IO.File.Create(Path.Combine(uploadRoot, file.FileName));
+                    file.CopyTo(stream);
+
+
+                    var relative = $"/uploads/{safeId}/{file.FileName}";
+                    joinedPaths = string.IsNullOrEmpty(joinedPaths) ? relative : $"{joinedPaths};{relative}";
+                }
+            }
+
+            model.AttachmentPath = joinedPaths;
+            _store.Add(model);
+
+            return RedirectToAction(nameof(Success), new { id = model.Id });
+        }
+
+        public IActionResult Success(Guid id)
+        {
+            var issue = _store.Get(id);
+            if (issue == null)
+            {
+                return NotFound();
+            }
+            return View(issue);
         }
     }
 }
