@@ -101,40 +101,65 @@ namespace ST10291238_PROG7312_POE.Controllers
             return View(issue);
         }
 
+        private static readonly List<Event> SampleEvents = new()
+        {
+            new Event { Title="Youth Career Expo", Category="Education", Description="Career guidance and networking opportunities for students.", Date=DateTime.Today.AddDays(4), Location="Town Hall" },
+            new Event { Title="Municipal Budget Meeting", Category="Government", Description="Public presentation of the upcoming municipal budget and development priorities.", Date=DateTime.Today.AddDays(6), Location="Civic Centre" },
+            new Event { Title="Water Conservation Workshop", Category="Environment", Description="Learn simple techniques to reduce water usage at home.", Date=DateTime.Today.AddDays(1), Location="Eco Centre" },
+            new Event { Title="Loadshedding Notice", Category="Utilities", Description="Scheduled power outage.", Date=DateTime.Today.AddDays(5), Location="Zone 11" },
+            new Event { Title="Community Soccer Tournament", Category="Sports", Description="Eight-team knockout competition for all local clubs.", Date=DateTime.Today.AddDays(12), Location="Athlone Stadium" },
+            new Event { Title="Entrepreneurship Workshop", Category="Business", Description="Training session on business registration and funding opportunities.", Date=DateTime.Today.AddDays(9), Location="Innovation Hub" },
+            new Event { Title="Road Repairs Update", Category="Infrastructure", Description="Repair works on the M3 to be completed this weekend.", Date=DateTime.Today.AddDays(7), Location="M3 Southbound" },
+            new Event { Title="Community Choir Concert", Category="Culture", Description="Evening of gospel and traditional music.", Date=DateTime.Today.AddDays(11), Location="Arts Centre" },
+            new Event { Title="Health Screening Campaign", Category="Health", Description="Free blood pressure and diabetes screening for residents.", Date=DateTime.Today.AddDays(3), Location="Community Clinic" },
+            new Event { Title="Senior Citizen Picnic", Category="Community", Description="A social day for seniors with games, food, and music.", Date=DateTime.Today.AddDays(14), Location="Botanical Gardens" }
+        };
+
+        private static readonly Stack<string> searchHistory = new();
+        private static readonly Dictionary<string, int> searchPattern = new();
+
         [HttpGet]
         public IActionResult Event(string? category, DateTime? date)
         {
-            var events = new List<Event>
-            {
-                new Event { Title="Youth Career Expo", Category="Education", Description="Career guidance and networking opportunities for students.", Date=DateTime.Today.AddDays(4), Location="Town Hall" },
-                new Event { Title="Municipal Budget Meeting", Category="Government", Description="Public presentation of the upcoming municipal budget and development priorities.", Date=DateTime.Today.AddDays(6), Location="Civic Centre" },
-                new Event { Title="Water Conservation Workshop", Category="Environment", Description="Learn simple techniques to reduce water usage at home.", Date=DateTime.Today.AddDays(1), Location="Eco Centre" },
-                new Event { Title="Electricity Interruption Notice", Category="Utilities", Description="Scheduled power outage for system upgrades.", Date=DateTime.Today.AddDays(5), Location="Zone 3" },
-                new Event { Title="Community Soccer Tournament", Category="Sports", Description="Eight-team knockout competition for all local clubs.", Date=DateTime.Today.AddDays(12), Location="Municipal Stadium" },
-                new Event { Title="Entrepreneurship Workshop", Category="Business", Description="Training session on business registration and funding opportunities.", Date=DateTime.Today.AddDays(9), Location="Innovation Hub" },
-                new Event { Title="Road Repairs Update", Category="Infrastructure", Description="Repair works on Riverside Drive to be completed this weekend.", Date=DateTime.Today.AddDays(7), Location="Riverside Drive" },
-                new Event { Title="Community Choir Concert", Category="Culture", Description="Evening of gospel and traditional music.", Date=DateTime.Today.AddDays(11), Location="Arts Centre" },
-                new Event { Title="Health Screening Campaign", Category="Health", Description="Free blood pressure and diabetes screening for residents.", Date=DateTime.Today.AddDays(3), Location="Community Clinic" },
-                new Event { Title="Senior Citizen Picnic", Category="Community", Description="A social day for seniors with games, food, and music.", Date=DateTime.Today.AddDays(14), Location="Botanical Gardens" }
-            };
 
-            if (!string.IsNullOrWhiteSpace(category))
+            var events = SampleEvents.ToList();
+
+            if (!string.IsNullOrEmpty(category))
             {
-                events = events.Where(e => e.Category.Equals(category, StringComparison.OrdinalIgnoreCase)).ToList();
+                events = events
+                    .Where(e => e.Category.Equals(category, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+
+                searchHistory.Push(category);
+                if (searchPattern.ContainsKey(category))
+                    searchPattern[category]++;
+                else
+                    searchPattern[category] = 1;
             }
 
             if (date.HasValue)
-            {
                 events = events.Where(e => e.Date.Date == date.Value.Date).ToList();
-            }
 
-            var categories = events.Select(e => e.Category).Distinct().OrderBy(c => c).ToList();
+            var categories = SampleEvents.Select(e => e.Category).Distinct().OrderBy(c => c).ToList();
             ViewBag.Categories = categories;
             ViewBag.SelectedCategory = category;
             ViewBag.SelectedDate = date?.ToString("yyyy-MM-dd");
 
-            var ordered = events.OrderBy(e => e.Date).ToList();
+            IEnumerable<Event> recommendations = Enumerable.Empty<Event>();
 
+            if (searchPattern.Count > 0)
+            {
+                var topCategory = searchPattern.OrderByDescending(d => d.Value).First().Key;
+
+                recommendations = SampleEvents
+                    .Where(e => e.Category.Equals(topCategory, StringComparison.OrdinalIgnoreCase))
+                    .OrderBy(e => e.Date)
+                    .Take(3);
+            }
+
+            ViewBag.Recommendations = recommendations;
+
+            var ordered = events.OrderBy(e => e.Date).ToList();
 
             return View(ordered);
         }

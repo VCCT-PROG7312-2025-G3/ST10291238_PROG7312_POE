@@ -64,17 +64,23 @@ else
 <h4>Recommended for You</h4>
 @if (recommendedEvents != null && recommendedEvents.Any())
 {
-    <div class="d-flex flex-wrap gap-3">
+    <div class="row g-3">
         @foreach (var ev in recommendedEvents)
         {
-            <div class="border rounded p-3 bg-light">
-                <strong>@ev.Title</strong> <br />
-                <span class="small text-muted">@ev.Category • @ev.Date.ToString("MMM dd")</span>
+            <div class="col-md-4">
+                <div class="card border-0 bg-light h-100">
+                    <div class="card-body">
+                        <h6 class="fw-bold">@ev.Title</h6>
+                        <p class="small mb-1">@ev.Date.ToString("ddd, MMM dd")</p>
+                        <p class="text-secondary small">@ev.Description</p>
+                        <span class="badge bg-success">@ev.Category</span>
+                    </div>
+                </div>
             </div>
         }
     </div>
 }
 else
 {
-    <p class="text-muted">Search to start receiving recommendations.</p>
+    <p class="text-muted">Search for events to start getting personalized recommendations.</p>
 }
