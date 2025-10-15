@@ -17,12 +17,12 @@
     </div>
 
     <div class="col-12 col-md-4">
-        <div class="p-4 border rounded-3 h-100 opacity-75">
+        <div class="p-4 border rounded-3 h-100">
             <h5 class="mb-2">Local Events & Announcements</h5>
             <p class="text-secondary small">Community notices and upcoming events.</p>
-            <div class="d-flex align-items-center gap-2">
-                <button class="btn btn-secondary w-100" disabled>Coming Soon</button>
-            </div>
+            <form asp-controller="Home" asp-action="Event" method="get">
+                <button type="submit" class="btn btn-primary w-100">Open</button>
+            </form>
         </div>
     </div>
 

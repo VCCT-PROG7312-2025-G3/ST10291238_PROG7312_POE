@@ -1,0 +1,80 @@
+﻿@model IEnumerable<ST10291238_PROG7312_POE.Models.Event>
+
+@{
+    ViewData["Title"] = "Local Events and Announcements";
+    var categories = ViewBag.Categories as IEnumerable<string>;
+    var recommendedEvents = ViewBag.RecommendedEvents as IEnumerable<ST10291238_PROG7312_POE.Models.Event>;
+}
+
+<a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary mb-3">
+    <i class="bi bi-arrow-left"></i> Back to Main Menu
+</a>
+
+
+<h2 class="mb-3">Local Events & Announcements</h2>
+
+<form method="get" asp-action="Event" class="row g-3 mb-4">
+    <div class="col-md-4">
+        <label class="form-label">Category</label>
+        <select name="category" class="form-select">
+            <option value="">All</option>
+            @foreach (var cat in categories)
+            {
+                <option value="@cat" selected="@(cat == (string)ViewBag.SelectedCategory)">
+                    @cat
+                </option>
+            }
+        </select>
+    </div>
+    <div class="col-md-4">
+        <label class="form-label">Date</label>
+        <input type="date" name="date" class="form-control" value="@ViewBag.SearchDate" />
+    </div>
+    <div class="col-md-4 d-flex align-items-end">
+        <button type="submit" class="btn btn-primary w-100">Search</button>
+    </div>
+</form>
+
+@if (!Model.Any())
+{
+    <p class="text-muted">No events found for the selected filters.</p>
+}
+else
+{
+    <div class="row g-4">
+        @foreach (var ev in Model)
+        {
+            <div class="col-md-6 col-lg-4">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">@ev.Title</h5>
+                        <p class="card-text small text-secondary">@ev.Date:dddd, MMM d yyyy</p>
+                        <p class="card-text">@ev.Description</p>
+                        <span class="badge bg-success">@ev.Category</span>
+                        <div class="mt-2"><i class="bi bi-geo-alt"></i> @ev.Location</div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+<hr class="my-4" />
+
+<h4>Recommended for You</h4>
+@if (recommendedEvents != null && recommendedEvents.Any())
+{
+    <div class="d-flex flex-wrap gap-3">
+        @foreach (var ev in recommendedEvents)
+        {
+            <div class="border rounded p-3 bg-light">
+                <strong>@ev.Title</strong> <br />
+                <span class="small text-muted">@ev.Category • @ev.Date.ToString("MMM dd")</span>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <p class="text-muted">Search to start receiving recommendations.</p>
+}

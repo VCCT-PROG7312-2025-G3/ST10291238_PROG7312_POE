@@ -13,6 +13,15 @@ namespace ST10291238_PROG7312_POE.Services
         private readonly Stack<string> searchHistory;
         private readonly Dictionary<string, int> searchPattern;
 
+        public EventStore()
+        {
+            eventsByDate = new SortedDictionary<DateTime, Queue<Event>>();
+            eventsByCategory = new Dictionary<string, HashSet<Event>>();
+            categories = new HashSet<string>();
+            searchHistory = new Stack<string>();
+            searchPattern = new Dictionary<string, int>();
+        }
+
         public void AddEvent(Event e)
         {
             if (!eventsByDate.ContainsKey(e.Date.Date))
@@ -70,7 +79,7 @@ namespace ST10291238_PROG7312_POE.Services
                 searchHistory.Push(category);
                 if (searchPattern.ContainsKey(category))
                 {
-                    searchPattern(category)++;
+                    searchPattern[category]++;
                 }
                 else
                 {
