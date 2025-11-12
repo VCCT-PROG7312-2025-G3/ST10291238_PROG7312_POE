@@ -24,10 +24,10 @@ namespace ST10291238_PROG7312_POE.Controllers
                 _serviceStore = new ServiceRequestStore();
         }
 
-        // --------------------------- MAIN MENU ---------------------------
+
         public IActionResult Index() => View();
 
-        // --------------------------- REPORT ISSUES ---------------------------
+
         [HttpGet]
         public IActionResult ReportIssue() => View(new Issue());
 
@@ -84,7 +84,7 @@ namespace ST10291238_PROG7312_POE.Controllers
             return issue == null ? NotFound() : View(issue);
         }
 
-        // --------------------------- EVENTS & ANNOUNCEMENTS ---------------------------
+
         private static readonly List<Event> SampleEvents = new()
         {
             new Event { Title="Youth Career Expo", Category="Education", Description="Career guidance and networking opportunities for students.", Date=DateTime.Today.AddDays(4), Location="Town Hall" },
@@ -142,7 +142,7 @@ namespace ST10291238_PROG7312_POE.Controllers
             return View(ordered);
         }
 
-        // --------------------------- SERVICE REQUEST STATUS ---------------------------
+
         private static ServiceRequestStore _serviceStore;
 
         [HttpGet]
