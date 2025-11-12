@@ -1,0 +1,83 @@
+﻿@model ST10291238_PROG7312_POE.Models.ServiceRequest
+@{
+    ViewData["Title"] = "Track Service Request";
+    var related = ViewBag.Related as List<Guid>;
+}
+
+<div class="container py-4">
+    <a asp-action="ServiceRequests" class="btn btn-outline-secondary mb-3">
+        <i class="bi bi-arrow-left"></i> Back to Request List
+    </a>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-primary text-white">
+            <i class="bi bi-search"></i> Service Request Details
+        </div>
+        <div class="card-body">
+            <div class="row mb-2">
+                <div class="col-md-6">
+                    <p><strong>Reference:</strong> @Model.Reference</p>
+                    <p><strong>Citizen Name:</strong> @Model.ResidentName</p>
+                    <p><strong>Category:</strong> @Model.Category</p>
+                    <p><strong>Location:</strong> @Model.Location</p>
+                </div>
+                <div class="col-md-6">
+                    <p>
+                        <strong>Status:</strong>
+                        <span class="badge bg-@(Model.Status == "Completed" ? "success" : Model.Status == "In Progress" ? "warning" : "secondary")">
+                            @Model.Status
+                        </span>
+                    </p>
+                    <p><strong>Priority:</strong> <span class="fw-bold">@Model.Pritority</span></p>
+                    <p><strong>Reported:</strong> @Model.CreatedDate.ToString("dd MMM yyyy HH:mm")</p>
+                </div>
+            </div>
+
+            <div class="alert alert-info mt-3">
+                <strong>Description:</strong> @Model.Description
+            </div>
+        </div>
+    </div>
+
+    <div class="card mt-4 shadow-sm border-0">
+        <div class="card-header bg-light fw-semibold">
+            <i class="bi bi-clock-history"></i> Request History
+        </div>
+        <div class="card-body">
+            @if (Model.History.Any())
+            {
+                <ul class="list-group list-group-flush">
+                    @foreach (var h in Model.History)
+                    {
+                        <li class="list-group-item">@h</li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p class="text-muted mb-0">No updates available yet.</p>
+            }
+        </div>
+    </div>
+
+    @if (related != null && related.Any())
+    {
+        <div class="card mt-4 shadow-sm border-0">
+            <div class="card-header bg-light fw-semibold">
+                <i class="bi bi-diagram-3"></i> Related Requests
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    @foreach (var id in related)
+                    {
+                        <li class="list-group-item">
+                            <a asp-action="TrackServiceRequest" asp-route-id="@id" class="text-primary">
+                                <i class="bi bi-link-45deg"></i> @id
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    }
+</div>

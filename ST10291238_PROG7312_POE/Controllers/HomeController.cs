@@ -1,11 +1,12 @@
 using System;
 using System.IO;
-using System.Net;
 using System.Linq;
-using System.Diagnostics;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using ST10291238_PROG7312_POE.Models;
 using ST10291238_PROG7312_POE.Services;
+using ST10291238_PROG7312_POE.DataStructures;
+using Microsoft.AspNetCore.Hosting;
 
 namespace ST10291238_PROG7312_POE.Controllers
 {
@@ -18,18 +19,17 @@ namespace ST10291238_PROG7312_POE.Controllers
         {
             _store = store;
             _env = env;
+
+            if (_serviceStore == null)
+                _serviceStore = new ServiceRequestStore();
         }
 
-        public IActionResult Index()
-        {
-            return View();
-        }
+        // --------------------------- MAIN MENU ---------------------------
+        public IActionResult Index() => View();
 
+        // --------------------------- REPORT ISSUES ---------------------------
         [HttpGet]
-        public IActionResult ReportIssue()
-        {
-            return View(new Issue());
-        }
+        public IActionResult ReportIssue() => View(new Issue());
 
         [HttpPost]
         public IActionResult ReportIssue(Issue model, IFormFile[]? files)
@@ -43,21 +43,14 @@ namespace ST10291238_PROG7312_POE.Controllers
             ModelState.Remove(nameof(model.Status));
             ModelState.Remove(nameof(model.AttachmentPaths));
 
-
             if (string.IsNullOrWhiteSpace(model.Location))
-            {
                 ModelState.AddModelError(nameof(model.Location), "Location is required.");
-            }
 
             if (string.IsNullOrWhiteSpace(model.Description))
-            {
                 ModelState.AddModelError(nameof(model.Description), "Description is required.");
-            }
 
             if (!ModelState.IsValid)
-            {
                 return View(model);
-            }
 
             string safeId = model.Id.ToString("N");
             string uploadRoot = Path.Combine(_env.WebRootPath ?? "wwwroot", "uploads", safeId);
@@ -68,18 +61,13 @@ namespace ST10291238_PROG7312_POE.Controllers
             {
                 foreach (var file in files)
                 {
-                    if (file == null || file.Length == 0)
-                        continue;
-
+                    if (file.Length == 0) continue;
                     var allowed = new[] { ".jpg", ".jpeg", ".png", ".gif", ".pdf", ".docx" };
                     var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
-                    if (!allowed.Contains(ext))
-                        continue;
+                    if (!allowed.Contains(ext)) continue;
 
                     using var stream = System.IO.File.Create(Path.Combine(uploadRoot, file.FileName));
                     file.CopyTo(stream);
-
-
                     var relative = $"/uploads/{safeId}/{file.FileName}";
                     joinedPaths = string.IsNullOrEmpty(joinedPaths) ? relative : $"{joinedPaths};{relative}";
                 }
@@ -87,20 +75,16 @@ namespace ST10291238_PROG7312_POE.Controllers
 
             model.AttachmentPaths = joinedPaths;
             _store.Add(model);
-
             return RedirectToAction(nameof(Success), new { id = model.Id });
         }
 
         public IActionResult Success(Guid id)
         {
             var issue = _store.Get(id);
-            if (issue == null)
-            {
-                return NotFound();
-            }
-            return View(issue);
+            return issue == null ? NotFound() : View(issue);
         }
 
+        // --------------------------- EVENTS & ANNOUNCEMENTS ---------------------------
         private static readonly List<Event> SampleEvents = new()
         {
             new Event { Title="Youth Career Expo", Category="Education", Description="Career guidance and networking opportunities for students.", Date=DateTime.Today.AddDays(4), Location="Town Hall" },
@@ -121,14 +105,11 @@ namespace ST10291238_PROG7312_POE.Controllers
         [HttpGet]
         public IActionResult Event(string? category, DateTime? date)
         {
-
             var events = SampleEvents.ToList();
 
             if (!string.IsNullOrEmpty(category))
             {
-                events = events
-                    .Where(e => e.Category.Equals(category, StringComparison.OrdinalIgnoreCase))
-                    .ToList();
+                events = events.Where(e => e.Category.Equals(category, StringComparison.OrdinalIgnoreCase)).ToList();
 
                 searchHistory.Push(category);
                 if (searchPattern.ContainsKey(category))
@@ -150,7 +131,6 @@ namespace ST10291238_PROG7312_POE.Controllers
             if (searchPattern.Count > 0)
             {
                 var topCategory = searchPattern.OrderByDescending(d => d.Value).First().Key;
-
                 recommendations = SampleEvents
                     .Where(e => e.Category.Equals(topCategory, StringComparison.OrdinalIgnoreCase))
                     .OrderBy(e => e.Date)
@@ -158,10 +138,31 @@ namespace ST10291238_PROG7312_POE.Controllers
             }
 
             ViewBag.Recommendations = recommendations;
-
             var ordered = events.OrderBy(e => e.Date).ToList();
-
             return View(ordered);
+        }
+
+        // --------------------------- SERVICE REQUEST STATUS ---------------------------
+        private static ServiceRequestStore _serviceStore;
+
+        [HttpGet]
+        public IActionResult ServiceRequests()
+        {
+            var requests = _serviceStore.GetAllRequests();
+            var urgent = _serviceStore.GetUrgentRequests().OrderBy(r => r.Pritority).Take(3).ToList();
+            ViewBag.Urgent = urgent;
+            return View(requests);
+        }
+
+        [HttpGet]
+        public IActionResult TrackServiceRequest(Guid id)
+        {
+            var req = _serviceStore.GetRequestByReference(id);
+            if (req == null)
+                return NotFound();
+
+            ViewBag.Related = _serviceStore.GetRelatedRequests(id);
+            return View(req);
         }
     }
 }

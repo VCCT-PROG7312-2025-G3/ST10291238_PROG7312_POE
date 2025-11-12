@@ -1,0 +1,96 @@
+﻿@model IEnumerable<ST10291238_PROG7312_POE.Models.ServiceRequest>
+@{
+    ViewData["Title"] = "Service Request Status";
+    var urgent = ViewBag.Urgent as IEnumerable<ST10291238_PROG7312_POE.Models.ServiceRequest>;
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-primary mb-0">Service Request Status</h2>
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-house"></i> Back to Main Menu
+        </a>
+    </div>
+
+    <p class="text-muted">Track all submitted service requests and monitor their progress. Click a reference number to view full details.</p>
+
+    <div class="row g-4">
+        <div class="col-md-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-primary text-white fw-semibold">
+                    <i class="bi bi-list-check"></i> All Submitted Requests
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Reference</th>
+                                <th>Citizen</th>
+                                <th>Category</th>
+                                <th>Location</th>
+                                <th>Status</th>
+                                <th>Priority</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var r in Model)
+                            {
+                                string statusClass = r.Status switch
+                                {
+                                    "Completed" => "success",
+                                    "In Progress" => "warning",
+                                    _ => "secondary"
+                                };
+                                <tr>
+                                    <td>
+                                        <a asp-action="TrackServiceRequest" asp-route-id="@r.Reference" class="text-decoration-none fw-semibold text-primary">
+                                            @r.Reference.ToString().Substring(0, 8)
+                                        </a>
+                                    </td>
+                                    <td>@r.ResidentName</td>
+                                    <td>@r.Category</td>
+                                    <td>@r.Location</td>
+                                    <td>
+                                        <span class="badge bg-@statusClass">@r.Status</span>
+                                    </td>
+                                    <td>
+                                        <span class="fw-semibold">@r.Pritority</span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-warning text-dark fw-semibold">
+                    <i class="bi bi-exclamation-triangle"></i> Most Urgent Requests
+                </div>
+                <div class="card-body">
+                    @if (urgent != null && urgent.Any())
+                    {
+                        <ul class="list-group list-group-flush">
+                            @foreach (var u in urgent)
+                            {
+                                <li class="list-group-item">
+                                    <strong>@u.Category</strong> — @u.Location <br />
+                                    <small class="text-muted">
+                                        Status: <span class="fw-semibold">@u.Status</span> |
+                                        Priority: @u.Pritority
+                                    </small>
+                                </li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p class="text-muted mb-0">No urgent requests at the moment.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
